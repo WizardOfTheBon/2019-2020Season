@@ -24,7 +24,7 @@ class SwerveModule:
 		#the above line centers the absolute encoder and then changes its direction, as the absolute encoders spin
 		#the opposite direction of the NEO encoders
 		
-		self.turnController = wpilib.controller.PIDController(self.kP, self.kI, self.kD)
+		self.turnController = wpilib.controller.PIDController(self.kP, self.kI, self.kD, self.kIz, self.kFF)
 		self.turnController.enableContinuousInput(-180,180) #the angle range we decided to make standard
 		
 		self.turnDeadband = .035
