@@ -29,7 +29,7 @@ class ManualTurret:
 		self.hoodServoGearRatio = 1/25 #25 degrees of movement is from 0 to 1
 		self.hoodStartAngle = 30
 		
-	def rotate(self):
+	def returnToOrigin(self):
 		if self.rotateEncoder > 0:
 			self.rotateMotor.set(-0.1)
 		elif self.rotateEncoder < 0:
