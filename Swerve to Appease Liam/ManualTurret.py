@@ -4,12 +4,15 @@ import rev
 class ManualTurret:
 	encoderConversion = 20
 	
+	#PID arguments
 	kP = 0
 	kI = 0
 	kD = 0
-	kStatic = 0
-	kVelocity = 0
-	kAcceleration = 0
+	
+	#FeedForward arguments
+	kS = 0
+	kV = 0
+	kA = 0
 	
 	def __init__(self, rotateID, flyWheelID, servoID, speed, rotateThreshold):
 		self.rotateMotor = rev.CANSparkMax(rotateID, MotorType.kBrushless)
@@ -20,6 +23,7 @@ class ManualTurret:
 		self.flyWheelEncoder = self.flyWheelMotor.getEncoder()
 		
 		self.flyWheelController = wpilib.controller.PIDController(kP,kI,kD)
+		self.flyWheelFeedForward = wpilib.controller.SimpleMotorFeedforward(kS, kV, kA)
 		
 		self.hoodServo = wpilib.Servo(servoID)
 		self.hoodServoGearRatio = 1/25 #from 0 to 1 you go 25 degrees
@@ -37,10 +41,7 @@ class ManualTurret:
 		self.flyWheelController.setSetpoint(goalSpeed)
 		acceleration = self.flyWheelController.setSpeed(currentSpeed)
 		
-		if (kStatic + kVelocity*currentSpeed + kAcceleration*acceleration) < maxVoltage:
-			self.flyWheelMotor.set((kStatic + kVelocity*currentSpeed + kAcceleration*acceleration)/maxVoltage)
-		else:
-			self.flyWheelMotor.set(1)
+		self.flyWheelMotor(self.flyWheelFeedForward.calculate(currentSpeed, acceleration))
 		
 	def spinBrake(self):
 		self.flyWheelMotor.setIdleMode(rev.IdleMode.kBrake)
