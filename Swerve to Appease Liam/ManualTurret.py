@@ -11,7 +11,7 @@ class ManualTurret:
 	kVelocity = 0
 	kAcceleration = 0
 	
-	def __init__(self, rotateID, flyWheelID, servoID, speed, rotateThreshold):
+	def __init__(self, rotateID, flyWheelID, servoID, rotateThreshold):
 		self.rotateMotor = rev.CANSparkMax(rotateID, MotorType.kBrushless)
 		self.rotateEncoder = self.rotateMotor.getEncoder()
 		self.rotateThreshold = rotateThreshold

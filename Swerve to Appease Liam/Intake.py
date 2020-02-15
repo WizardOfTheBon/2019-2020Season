@@ -2,16 +2,17 @@ import wpilib
 import rev
 
 class Intake:
-	def __init__(self, intakeID, halfMoonID, speed):
+	def __init__(self, intakeID, halfMoonID, intakeSpeed, halfMoonSpeed):
 		self.intakeMotor = rev.CANSparkMax(intakeID, MotorType.kBrushless)
 		self.halfMoonMotor = rev.CANSparkMax(halfMoonID, MotorType.kBrushless)
-		self.speed = speed
+		self.intakeSpeed = intakeSpeed
+		self.halfMoonSpeed = halfMoonSpeed
 	def collect(self):
-		self.intakeMotor.set(self.speed)
-		self.halfMoonMotor.set(self.speed)
+		self.intakeMotor.set(self.intakeSpeed)
+		self.halfMoonMotor.set(self.halfMoonSpeed)
 	def expel(self):
-		self.intakeMotor.set(-self.speed)
-		self.halfMoonMotor.set(-self.speed)
+		self.intakeMotor.set(-self.intakeSpeed)
+		self.halfMoonMotor.set(-self.halfMoonSpeed)
 	def coast(self):
 		self.intakeMotor.setIdleMode(rev.IdleMode.kCoast)
 		self.halfMoonMotor.setIdleMode(rev.IdleMode.kCoast)
