@@ -22,7 +22,7 @@ class ManualTurret:
 		self.flyWheelController = wpilib.controller.PIDController(kP,kI,kD)
 		
 		self.hoodServo = wpilib.Servo(servoID)
-		self.hoodServoGearRatio = 1/25 #from 0 to 1 you go 25 degrees
+		self.hoodServoGearRatio = 1/25 #25 degrees of movement is from 0 to 1
 		self.hoodStartAngle = 30
 		
 	def rotate(self, z):
