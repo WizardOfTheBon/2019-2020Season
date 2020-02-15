@@ -29,12 +29,12 @@ class ManualTurret:
 		self.hoodServoGearRatio = 1/25 #25 degrees of movement is from 0 to 1
 		self.hoodStartAngle = 30
 		
-	def rotate(self, z):
-		if self.rotateEncoder.getPosition()*encoderConversion < rotateThreshold and z > 0:
-			self.rotateMotor.set(0.1*z)
-		if self.rotateEncoder.getPosition()*encoderConversion > -1*rotateThreshold and z < 0:
-			self.rotateMotor.set(0.1*z)
-			
+	def rotate(self):
+		if self.rotateEncoder > 0:
+			self.rotateMotor.set(-0.1)
+		elif self.rotateEncoder < 0:
+			self.rotateMotor.set(0.1)
+		
 	def spin(self, goalSpeed):
 		currentSpeed = self.flyWheelEncoder.getVelocity()*encoderConversion
 		
