@@ -3,7 +3,7 @@ import rev
 
 class Climb:
 	def __init__(self, motorID, speed):
-		self.climbMotor = rev.CANSparkMax(ID, MotorType.kBrushless)
+		self.climbMotor = rev.CANSparkMax(motorID, MotorType.kBrushless)
 		self.speed = speed
 	def extend(self):
 		self.climbMotor.set(self.speed)

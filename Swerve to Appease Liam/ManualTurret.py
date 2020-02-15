@@ -14,7 +14,7 @@ class ManualTurret:
 	kV = 0
 	kA = 0
 	
-	def __init__(self, rotateID, flyWheelID, servoID, speed, rotateThreshold):
+	def __init__(self, rotateID, flyWheelID, servoID, rotateThreshold):
 		self.rotateMotor = rev.CANSparkMax(rotateID, MotorType.kBrushless)
 		self.rotateEncoder = self.rotateMotor.getEncoder()
 		self.rotateThreshold = rotateThreshold
@@ -26,7 +26,7 @@ class ManualTurret:
 		self.flyWheelFeedForward = wpilib.controller.SimpleMotorFeedforward(kS, kV, kA)
 		
 		self.hoodServo = wpilib.Servo(servoID)
-		self.hoodServoGearRatio = 1/25 #from 0 to 1 you go 25 degrees
+		self.hoodServoGearRatio = 1/25 #25 degrees of movement is from 0 to 1
 		self.hoodStartAngle = 30
 		
 	def rotate(self, z):
