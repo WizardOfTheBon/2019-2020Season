@@ -4,15 +4,14 @@ import rev
 class ManualTurret:
 	encoderConversion = 20
 	
-	#PID arguments
-	kP = 0
+	#PID arguments (need to be adjusted)
+	kP = 0.005
 	kI = 0
 	kD = 0
 	
-	#FeedForward arguments
-	kS = 0
-	kV = 0
-	kA = 0
+	#FeedForward arguments (need to be adjusted)
+	kIZone = 0 #the distance to the goal where kI kicks in (so it doesn't overpower everything else)
+	kFF = 1 #voltage per unit of speed
 	
 	def __init__(self, rotateID, flyWheelID, servoID, rotateThreshold):
 		self.rotateMotor = rev.CANSparkMax(rotateID, MotorType.kBrushless)
@@ -22,26 +21,27 @@ class ManualTurret:
 		self.flyWheelMotor = rev.CANSparkMax(flyWheelID, MotorType.kBrushless)
 		self.flyWheelEncoder = self.flyWheelMotor.getEncoder()
 		
-		self.flyWheelController = wpilib.controller.PIDController(kP,kI,kD)
-		self.flyWheelFeedForward = wpilib.controller.SimpleMotorFeedforward(kS, kV, kA)
+		self.flyWheelController = rev.CANPIDController(self.flyWheelMotor)
+		self.flyWheelController.setP(kP)
+		self.flyWheelController.setI(kI)
+		self.flyWheelController.setD(kD)
+		self.flyWheelController.setIZone(kIZone)
+		self.flyWheelController.setFF(kFF)
 		
-		self.hoodServo = wpilib.Servo(servoID)
-		self.hoodServoGearRatio = 1/25 #25 degrees of movement is from 0 to 1
-		self.hoodStartAngle = 30
+		#self.hoodServo = wpilib.Servo(servoID)
+		#self.hoodServoGearRatio = 1/25 #25 degrees of movement is from 0 to 1
+		#self.hoodStartAngle = 30
 		
 	def returnToOrigin(self):
-		if self.rotateEncoder > 0:
+		if self.rotateEncoder > 20:
 			self.rotateMotor.set(-0.1)
-		elif self.rotateEncoder < 0:
+		elif self.rotateEncoder < -20:
 			self.rotateMotor.set(0.1)
 		
 	def spin(self, goalSpeed):
-		currentSpeed = self.flyWheelEncoder.getVelocity()*encoderConversion
-		
-		self.flyWheelController.setSetpoint(goalSpeed)
-		acceleration = self.flyWheelController.setSpeed(currentSpeed)
-		
-		self.flyWheelMotor(self.flyWheelFeedForward.calculate(currentSpeed, acceleration))
+		#currentSpeed = self.flyWheelEncoder.getVelocity()*encoderConversion
+		percent = goalSpeed/5700
+		self.flyWheelMotor.set(percent)
 		
 	def spinBrake(self):
 		self.flyWheelMotor.setIdleMode(rev.IdleMode.kBrake)
@@ -50,5 +50,6 @@ class ManualTurret:
 		self.flyWheelMotor.setIdleMode(rev.IdleMode.kCoast)
 		
 	def setHoodAngle(self, angle):
-		angle -= self.hoodStartAngle
-		self.hoodServo.set(angle * self.hoodServoGearRatio)
+		pass
+		#angle -= self.hoodStartAngle
+		#self.hoodServo.set(angle * self.hoodServoGearRatio)
