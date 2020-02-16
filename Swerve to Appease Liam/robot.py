@@ -24,20 +24,12 @@ class MyRobot(wpilib.TimedRobot):
 		self.joystickDeadband = .2
 		
 		#buttons
-		'''self.climbExtendButton = wpilib.DriverStation.getStickButton(1, 1)
-		self.climbContractButton = wpilib.DriverStation.getStickButton(1, 2)'''
-		self.feederInButton = wpilib.DriverStation.getStickButton(1, 1) #queueueue clear
-		#self.feederOutButton = wpilib.DriverStation.getStickButton(1, 4) #KILL THIS
+		self.feederInButton = wpilib.DriverStation.getStickButton(1, 1)
 		self.intakeInButton = wpilib.DriverStation.getStickButton(0, 1)
 		self.intakeOutButton = wpilib.DriverStation.getStickButton(0, 2)
 		self.autoManualSwitch = wpilib.DriverStation.getStickButton(2, 1)
 		self.manualFlywheelSwitch = wpilib.DriverStation.getStickButton(2, 4)
-		'''self.manualTurretHoodDial = wpilib.DriverStation.getStickButton(1, 5)
-		self.manualTurretSpinDial = wpilib.DriverStation.getStickButton(1, 6)
 		
-		#climbing object instantiation
-		self.climb = Climb(9,0.5) #motorID and speed
-		'''
 		#feeder object instantiation
 		self.feeder = Feed(10,0.5) #motorID and speed
 		
@@ -45,7 +37,7 @@ class MyRobot(wpilib.TimedRobot):
 		self.intake = Intake(11,12,0.5,0.7) #intakeID, halfMoonID, and corresponding speeds
 		
 		#manual turret object instantiation
-		self.manualTurret = ManualTurret(13,14,1,20) #rotate motor, flywheel motor, servoID, and rotateThreshold from middle to max
+		self.manualTurret = ManualTurret(13) #flywheel motor ID
 		
 		#drivetrain object instantiation and init
 		self.drive = DriveTrain()
@@ -80,15 +72,7 @@ class MyRobot(wpilib.TimedRobot):
 		print('teleop started')
 		
 	def CheckSwitches(self):
-		'''if self.climbExtendButton:
-			self.climb.extend()
-		elif self.climbContractButton:
-			self.climb.contract()
-		else:
-			self.climb.brake()'''
-		
 		if self.autoManualSwitch: #manual
-			#self.manualTurret.returnToOrigin()
 			
 			if self.feederInButton:
 				self.feeder.feed()
@@ -103,8 +87,6 @@ class MyRobot(wpilib.TimedRobot):
 			else:
 				self.intake.stop()
 			
-			#self.manualTurret.setHoodAngle(self.manualTurretHoodDial)
-			#self.manualTurret.spin(self.manualTurretSpinDial)
 			benIsAGoober = wpilib.SmartDashboard.getNumber("Flywheel RPM",self.perfectlyLegitFlywheelRPM)
 			if self.perfectlyLegitFlywheelRPM != benIsAGoober:
 				self.perfectlyLegitFlywheelRPM = benIsAGoober

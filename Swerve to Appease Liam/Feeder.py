@@ -7,7 +7,7 @@ class Feeder:
 		self.speed = speed
 	def feed(self):
 		self.feederMotor.set(self.speed)
-	def puke(self): #the idea of this makes me want to puke
+	def puke(self): #the idea of this makes me want to puke -Liam
 		self.feederMotor.set(-self.speed)
 	def coast(self):
 		self.feederMotor.setIdleMode(rev.IdleMode.kCoast)
