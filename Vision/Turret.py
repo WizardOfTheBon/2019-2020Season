@@ -28,8 +28,9 @@ class TurretAuto:
 	
 		self.turretMotorID = 11
 		self.spinMotorID = 12
+		self.engageMotorID = 14
 		
-		
+		self.engageMotor = rev.CANSparkMax(self.engageMotorID,rev.MotorType.kBrushless)
 		self.turretMotor = rev.CANSparkMax(self.turretMotorID,rev.MotorType.kBrushless)
 		self.spinMotor = rev.CANSparkMax(self.spinMotorID,rev.MotorType.kBrushless)
 		self.hoodServo = ??
@@ -65,6 +66,7 @@ class TurretAuto:
 		bop = self.yaw
 		turretOutput = self.turretTurnController.calculate(bop)
 		self.turretMotor.set(turretOutput)
+		
 	
 	def turretShoot(self):
 		#the turret must first align with the plane of the center of the target
