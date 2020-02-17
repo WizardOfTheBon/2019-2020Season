@@ -19,3 +19,6 @@ class Intake:
 	def brake(self):
 		self.intakeMotor.setIdleMode(rev.IdleMode.kBrake)
 		self.halfMoonMotor.setIdleMode(rev.IdleMode.kBrake)
+	def stop(self):
+		self.intakeMotor.set(0)
+		self.halfMoonMotor.set(0)

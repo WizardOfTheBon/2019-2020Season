@@ -19,41 +19,45 @@ class MyRobot(wpilib.TimedRobot):
 		
 		#joysticks
 		self.joystick = wpilib.Joystick(0)
-		self.buttonsJoystick = wpilib.Joystick(1)
+		self.buttonsJoystick1 = wpilib.Joystick(1)
+		self.buttonsJoystick2 = wpilib.Joystick(2)
 		self.joystickDeadband = .2
 		
 		#buttons
-		self.climbExtendButton = wpilib.DriverStation.getStickButton(1, 1)
-		self.climbContractButton = wpilib.DriverStation.getStickButton(1, 2)
-		self.feederInButton = wpilib.DriverStation.getStickButton(1, 3)
-		self.feederOutButton = wpilib.DriverStation.getStickButton(1, 4)
+		'''self.climbExtendButton = wpilib.DriverStation.getStickButton(1, 1)
+		self.climbContractButton = wpilib.DriverStation.getStickButton(1, 2)'''
+		self.feederInButton = wpilib.DriverStation.getStickButton(1, 1) #queueueue clear
+		#self.feederOutButton = wpilib.DriverStation.getStickButton(1, 4) #KILL THIS
 		self.intakeInButton = wpilib.DriverStation.getStickButton(0, 1)
 		self.intakeOutButton = wpilib.DriverStation.getStickButton(0, 2)
-		
-		self.manualTurretHoodDial = wpilib.DriverStation.getStickButton(1, 5)
+		self.autoManualSwitch = wpilib.DriverStation.getStickButton(2, 1)
+		self.manualFlywheelSwitch = wpilib.DriverStation.getStickButton(2, 4)
+		'''self.manualTurretHoodDial = wpilib.DriverStation.getStickButton(1, 5)
 		self.manualTurretSpinDial = wpilib.DriverStation.getStickButton(1, 6)
 		
 		#climbing object instantiation
 		self.climb = Climb(9,0.5) #motorID and speed
-		
+		'''
 		#feeder object instantiation
 		self.feeder = Feed(10,0.5) #motorID and speed
 		
 		#intake object instantiation
-		self.intake = Intake(11,12,0.5,0.5) #intakeID, halfMoonID, and corresponding speeds
+		self.intake = Intake(11,12,0.5,0.7) #intakeID, halfMoonID, and corresponding speeds
 		
 		#manual turret object instantiation
 		self.manualTurret = ManualTurret(13,14,1,20) #rotate motor, flywheel motor, servoID, and rotateThreshold from middle to max
 		
 		#drivetrain object instantiation and init
-		self.drive = DriveTrain() #keep in mind that these are all arbitrary names
-		self.drive.zeroEncoders() #feel free to change the weird ones
+		self.drive = DriveTrain()
+		self.drive.zeroEncoders()
 		self.fieldOriented = False
+		self.perfectlyLegitFlywheelRPM = 0
 		
 		#debugging messages
 		self.scaling = .5
 		wpilib.SmartDashboard.putNumber("Joystick scale factor", self.scaling)
 		wpilib.SmartDashboard.putNumber("Joystick deadband", self.joystickDeadband)
+		wpilib.SmartDashboard.putNumber("Flywheel RPM", self.perfectlyLegitFlywheelRPM)
 		wpilib.SmartDashboard.putBoolean("Field Oriented", self.fieldOriented)
 		
 	def checkDeadband(self, axis):
@@ -76,33 +80,42 @@ class MyRobot(wpilib.TimedRobot):
 		print('teleop started')
 		
 	def CheckSwitches(self):
-		if self.climbExtendButton:
+		'''if self.climbExtendButton:
 			self.climb.extend()
 		elif self.climbContractButton:
 			self.climb.contract()
 		else:
-			self.climb.brake()
+			self.climb.brake()'''
 		
-		if autoManualSwitch: #manual
-			self.manualTurret.returnToOrigin()
+		if self.autoManualSwitch: #manual
+			#self.manualTurret.returnToOrigin()
 			
 			if self.feederInButton:
 				self.feeder.feed()
-			elif self.feederOutButton:
-				self.feeder.puke()
 			else:
-				self.feeder.coast()
+				self.feeder.stop()
+			
 			
 			if self.intakeInButton:
 				self.intake.collect()
 			elif self.intakeOutButton:
 				self.intake.expel()
 			else:
-				self.intake.coast()
+				self.intake.stop()
 			
-			self.manualTurret.setHoodAngle(self.manualTurretHoodDial)
-			self.manualTurret.spin(self.manualTurretSpinDial)
+			#self.manualTurret.setHoodAngle(self.manualTurretHoodDial)
+			#self.manualTurret.spin(self.manualTurretSpinDial)
+			benIsAGoober = wpilib.SmartDashboard.getNumber("Flywheel RPM",self.perfectlyLegitFlywheelRPM)
+			if self.perfectlyLegitFlywheelRPM != benIsAGoober:
+				self.perfectlyLegitFlywheelRPM = benIsAGoober
 			
+			if self.manualFlywheelSwitch:
+				if self.perfectlyLegitFlywheelRPM > 600:
+					self.manualTurret.spin(self.perfectlyLegitFlywheelRPM)
+				else:
+					self.manualTurret.spin(0)
+			else:
+				self.manualTurret.spin(0)
 		
 	def teleopPeriodic(self):
 		CheckSwitches()
