@@ -95,9 +95,9 @@ class MyRobot(wpilib.TimedRobot):
 				if self.perfectlyLegitFlywheelRPM > 600:
 					self.manualTurret.spin(self.perfectlyLegitFlywheelRPM)
 				else:
-					self.manualTurret.spin(0)
+					self.manualTurret.spinStop()
 			else:
-				self.manualTurret.spin(0)
+				self.manualTurret.spinStop()
 		
 	def teleopPeriodic(self):
 		CheckSwitches()

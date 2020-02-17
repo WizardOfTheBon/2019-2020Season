@@ -22,7 +22,7 @@ class ManualTurret:
 		self.flyWheelMotor.set(percent)
 		
 	def spinPID(self, goalSpeed):
-		self.flyWheelController.setReference(goalSpeed, ControlType.kVelocity)
+		self.flyWheelController.setReference(goalSpeed, ControlType.kVelocity, arbFeedforward = self.kFF)
 		
 	def spinStop(self):
 		self.flyWheelMotor.set(0)

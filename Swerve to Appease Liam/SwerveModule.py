@@ -9,11 +9,18 @@ class SwerveModule:
 	turnMotorEncoderConversion = 20 #NEO encoder gives 0-18 as 1 full rotation
 	absoluteEncoderConversion = .08877
 	
-	kP = .0039 #these aren't actually tuned, and even if they are close, they're for driving a light robot on tile
-	kI = 0
-	kD = 0
-	
 	def __init__(self,driveID,turnID,encoderID,encoderOffset,name):
+		self.kPDrive = .0039 #these aren't actually tuned, and even if they are close, they're for driving a light robot on tile
+		self.kIDrive = 0
+		self.kDDrive = 0
+		self.kS = 0
+		self.kV = 1
+		self.kA = 0
+		
+		self.kPTurn = .0039
+		self.kITurn = 0
+		self.kDTurn = 0
+		
 		self.driveMotor = rev.CANSparkMax(driveID,rev.MotorType.kBrushless)
 		self.turnMotor = rev.CANSparkMax(turnID,rev.MotorType.kBrushless)
 		self.turnEncoder = self.turnMotor.getEncoder()
@@ -24,12 +31,18 @@ class SwerveModule:
 		#the above line centers the absolute encoder and then changes its direction, as the absolute encoders spin
 		#the opposite direction of the NEO encoders
 		
-		self.turnController = wpilib.controller.PIDController(kP, kI, kD)
+		self.turnController = wpilib.controller.PIDController(self.kPTurn, self.kITurn, self.kDTurn)
 		self.turnController.enableContinuousInput(-180,180) #the angle range we decided to make standard
+		
+		self.driveEncoder = self.driveMotor.getEncoder()
+		self.driveController = wpilib.controller.PIDController(self.kPDrive, self.kIDrive, self.kDDrive, self.kIZoneDrive, self.kFFDrive)
+		self.driveFeedforward = wpilib.controller.PIDController(self.kS, self.kV, self.kA)
 		
 		self.turnDeadband = .035
 		
 		self.moduleName = name
+		
+		self.lastPosition = self.encoderBoundedPosition()
 		
 	def encoderBoundedPosition(self):
 		position = self.turnEncoder.getPosition()%360 #this limits the encoder input
@@ -44,14 +57,30 @@ class SwerveModule:
 	def move(self,driveSpeed,angle):
 		position = self.encoderBoundedPosition()
 		
+		#this sets optimizes the wheel turning by taking the shortest path to the goal angle
+		if self.lastPosition > position:
+			if (360 - self.lastPosition + position) < (position - self.lastPosition):
+				position = position += 360
+		elif self.lastposition < position:
+			if (360 - self.lastPosition + position) > (position - self.lastPosition):
+				position = position - 360
+		
 		self.turnController.setSetpoint(angle) #tells the PID controller what our goal is
 		turnSpeed = self.turnController.calculate(position) #gets the ideal speed from the PID controller
 		
 		if abs(turnSpeed) < self.turnDeadband:
 			turnSpeed = 0
 		
-		self.driveMotor.set(driveSpeed)
+		#this finds the desired speed using PID and then the desired voltage using feedforward for the drive motor
+		self.driveController.setSetpoint(driveSpeed)
+		currentSpeed = self.driveEncoder.getVelocity()
+		driveAcceleration = self.driveController.calculate(currentSpeed)
+		driveVoltage = self.driveFeedforward.calculate(currentSpeed, driveAcceleration)
+		
+		self.driveMotor.setVoltage(driveVoltage)
 		self.turnMotor.set(turnSpeed)
+		
+		self.lastPosition = self.encoderBoundedPosition()
 		
 		wpilib.SmartDashboard.putNumber(self.moduleName,position)
 		
