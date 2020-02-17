@@ -109,7 +109,7 @@ class MyRobot(wpilib.TimedRobot):
 		y = -scale*self.checkDeadband(self.joystick.getY())
 		z = scale*self.checkDeadband(self.joystick.getZ())
 		
-		angle = -1*self.navx.getRoll() + 90
+		angle = -1*self.navx.getPitch() + 90
 		wpilib.SmartDashboard.putNumber("angle",angle)
 		angle *= math.pi/180
 		
