@@ -10,16 +10,18 @@ class SwerveModule:
 	absoluteEncoderConversion = .08877
 	
 	def __init__(self,driveID,turnID,encoderID,encoderOffset,name):
-		self.kPDrive = .0039 #these aren't actually tuned, and even if they are close, they're for driving a light robot on tile
-		self.kIDrive = 0
-		self.kDDrive = 0
-		self.kS = 0
-		self.kV = 1
-		self.kA = 0
+	
+		self.kPDrive = wpilib.SmartDashboard.getNumber('P drive',0.0039)
+		self.kIDrive = wpilib.SmartDashboard.getNumber('I drive',0)
+		self.kDDrive = wpilib.SmartDashboard.getNumber('D drive',0)
+		self.kS = wpilib.SmartDashboard.getNumber('FeedF S',0)
+		self.kV = wpilib.SmartDashboard.getNumber('FeedF V',0)
+		self.kA = wpilib.SmartDashboard.getNumber('FeedF A',0)
 		
-		self.kPTurn = .0039
-		self.kITurn = 0
-		self.kDTurn = 0
+		self.kTurn = wpilib.SmartDashboard.getNumber('P Turn', 0.0039)
+		self.kITurn = wpilib.SmartDashboard.getNumber('I Turn',0)
+		self.kDTurn = wpilib.SmartDashboard.getNumber('D Turn', 0)
+		
 		
 		self.driveMotor = rev.CANSparkMax(driveID,rev.MotorType.kBrushless)
 		self.turnMotor = rev.CANSparkMax(turnID,rev.MotorType.kBrushless)
@@ -55,12 +57,15 @@ class SwerveModule:
 		return position
 		
 	def move(self,driveSpeed,angle):
+		
+		
 		position = self.encoderBoundedPosition()
+		self.lastPosition = self.encoderBoundedPosition()
 		
 		#this sets optimizes the wheel turning by taking the shortest path to the goal angle
 		if self.lastPosition > position:
 			if (360 - self.lastPosition + position) < (position - self.lastPosition):
-				position = position += 360
+				position += 360
 		elif self.lastposition < position:
 			if (360 - self.lastPosition + position) > (position - self.lastPosition):
 				position = position - 360
@@ -80,9 +85,11 @@ class SwerveModule:
 		self.driveMotor.setVoltage(driveVoltage)
 		self.turnMotor.set(turnSpeed)
 		
-		self.lastPosition = self.encoderBoundedPosition()
+		
 		
 		wpilib.SmartDashboard.putNumber(self.moduleName,position)
+		
+		
 		
 	def stationary(self):
 		self.driveMotor.set(0) #this will be smoother once we drive with velocity PID (by setting setpoint to 0)

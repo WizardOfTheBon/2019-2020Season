@@ -24,11 +24,11 @@ class MyRobot(wpilib.TimedRobot):
 		self.joystickDeadband = .2
 		
 		#buttons
-		self.feederInButton = wpilib.DriverStation.getStickButton(1, 1)
-		self.intakeInButton = wpilib.DriverStation.getStickButton(0, 1)
-		self.intakeOutButton = wpilib.DriverStation.getStickButton(0, 2)
-		self.autoManualSwitch = wpilib.DriverStation.getStickButton(2, 1)
-		self.manualFlywheelSwitch = wpilib.DriverStation.getStickButton(2, 4)
+		self.feederInButton = self.buttonsJoystick1.getRawButton(1)
+		self.intakeInButton = self.buttonsJoystick1.getRawButton(1)
+		self.intakeOutButton = self.buttonsJoystick1.getRawButton(2)
+		self.autoManualSwitch = self.buttonsJoystick2.getRawButton(1)
+		self.manualFlywheelSwitch = self.buttonsJoystick2.getRawButton(4)
 		
 		#feeder object instantiation
 		self.feeder = Feed(10,0.5) #motorID and speed
